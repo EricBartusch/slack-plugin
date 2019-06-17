@@ -20,7 +20,7 @@ public class OnNotBuilt implements Condition {
 
     @Override
     public boolean userPreferenceMatches() {
-        return preferences.getNotifyNotBuilt();
+        return preferences.getNotifyNotBuilt() || preferences.getNotifyEveryFailure();
     }
 
     @Override

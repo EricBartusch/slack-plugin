@@ -27,14 +27,6 @@
             <f:checkbox field="notifyRepeatedFailure" />
         </f:entry>
 
-        <f:entry title="Include Test Summary">
-            <f:checkbox field="includeTestSummary" />
-        </f:entry>
-
-        <f:entry title="Include Failed Tests">
-            <f:checkbox field="includeFailedTests" />
-        </f:entry>
-
         <f:entry title="Notify Aborted">
             <f:checkbox field="notifyAborted" />
         </f:entry>
@@ -53,6 +45,14 @@
 
         <f:entry title="Notify Back To Normal">
             <f:checkbox field="notifyBackToNormal" />
+        </f:entry>
+
+        <f:entry title="Include Test Summary">
+            <f:checkbox field="includeTestSummary" />
+        </f:entry>
+
+        <f:entry title="Include Failed Tests">
+            <f:checkbox field="includeFailedTests" />
         </f:entry>
 
         <f:optionalBlock title="Include Custom Message" name="includeCustomMessage" inline="true"
@@ -128,9 +128,17 @@
             if (checkbox.checked) {
                 document.getElementsByName('_.notifyFailure')[0].disabled=true;
                 document.getElementsByName('_.notifyRepeatedFailure')[0].disabled=true;
+                document.getElementsByName('_.notifyAborted')[0].disabled=true;
+                document.getElementsByName('_.notifyNotBuilt')[0].disabled=true;
+                document.getElementsByName('_.notifyUnstable')[0].disabled=true;
+                document.getElementsByName('_.notifyRegression')[0].disabled=true;
             } else {
                 document.getElementsByName('_.notifyFailure')[0].disabled=false;
                 document.getElementsByName('_.notifyRepeatedFailure')[0].disabled=false;
+                document.getElementsByName('_.notifyAborted')[0].disabled=false;
+                document.getElementsByName('_.notifyNotBuilt')[0].disabled=false;
+                document.getElementsByName('_.notifyUnstable')[0].disabled=false;
+                document.getElementsByName('_.notifyRegression')[0].disabled=false;
             }
         }
 

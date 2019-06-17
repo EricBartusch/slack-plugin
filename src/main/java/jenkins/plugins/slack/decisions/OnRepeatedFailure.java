@@ -21,7 +21,7 @@ public class OnRepeatedFailure implements Condition {
 
     @Override
     public boolean userPreferenceMatches() {
-        return preferences.getNotifyRepeatedFailure();
+        return preferences.getNotifyRepeatedFailure() || preferences.getNotifyEveryFailure();
     }
 
     @Override

@@ -21,7 +21,7 @@ public class OnSingleFailure implements Condition {
 
     @Override
     public boolean userPreferenceMatches() {
-        return preferences.getNotifyFailure();
+        return preferences.getNotifyFailure() || preferences.getNotifyEveryFailure();
     }
 
     @Override

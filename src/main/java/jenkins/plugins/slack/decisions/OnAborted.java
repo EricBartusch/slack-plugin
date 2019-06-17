@@ -20,7 +20,7 @@ public class OnAborted implements Condition {
 
     @Override
     public boolean userPreferenceMatches() {
-        return preferences.getNotifyAborted();
+        return preferences.getNotifyAborted() || preferences.getNotifyEveryFailure();
     }
 
     @Override

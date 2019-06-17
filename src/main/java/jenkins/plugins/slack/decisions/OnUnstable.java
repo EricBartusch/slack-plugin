@@ -20,7 +20,7 @@ public class OnUnstable implements Condition {
 
     @Override
     public boolean userPreferenceMatches() {
-        return preferences.getNotifyUnstable();
+        return preferences.getNotifyUnstable() || preferences.getNotifyEveryFailure();
     }
 
     @Override

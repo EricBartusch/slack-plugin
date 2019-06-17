@@ -18,7 +18,7 @@
         </f:entry>
 	</j:if>
 
-    <f:advanced>
+    <f:advanced style="selector">
         <f:entry title="Notify First Failure Only">
             <f:checkbox field="notifyFailure"/>
         </f:entry>
@@ -124,6 +124,13 @@
     </f:advanced>
 
     <script type="text/javascript">
+        //Hack to get the checkboxes to disable on page load without breaking the original onload functionality
+        var oldLoad = onload;
+        onload = function() {
+            oldLoad();
+            enableDisableFailure(document.getElementsByName('_.notifyEveryFailure')[0]);
+        }
+        
         function enableDisableFailure(checkbox) {
             if (checkbox.checked) {
                 document.getElementsByName('_.notifyFailure')[0].disabled=true;

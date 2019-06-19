@@ -25,6 +25,7 @@ import jenkins.plugins.slack.Messages;
 import jenkins.plugins.slack.SlackNotifier;
 import jenkins.plugins.slack.SlackService;
 import jenkins.plugins.slack.StandardSlackService;
+import jenkins.plugins.slack.StandardSlackServiceBuilder;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -61,6 +62,9 @@ public class SlackSendStep extends Step {
     private boolean failOnError;
     private Object attachments;
     private boolean replyBroadcast;
+    private boolean sendAsText;
+    private String iconEmoji;
+    private String username;
 
     @Nonnull
     public String getMessage() {
@@ -165,8 +169,36 @@ public class SlackSendStep extends Step {
         this.replyBroadcast = replyBroadcast;
     }
 
+    public boolean getSendAsText() {
+        return sendAsText;
+    }
+
+    @DataBoundSetter
+    public void setSendAsText(boolean sendAsText) {
+        this.sendAsText = sendAsText;
+    }
+
+
     @DataBoundConstructor
     public SlackSendStep() {
+    }
+
+    public String getIconEmoji() {
+        return iconEmoji;
+    }
+
+    @DataBoundSetter
+    public void setIconEmoji(String iconEmoji) {
+        this.iconEmoji = iconEmoji;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    @DataBoundSetter
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -246,13 +278,16 @@ public class SlackSendStep extends Step {
             boolean botUser = step.botUser || slackDesc.isBotUser();
             String channel = step.channel != null ? step.channel : slackDesc.getRoom();
             String color = step.color != null ? step.color : "";
+            boolean sendAsText = step.sendAsText || slackDesc.isSendAsText();
+            String iconEmoji = step.iconEmoji != null ? step.iconEmoji : slackDesc.getIconEmoji();
+            String username = step.username != null ? step.username : slackDesc.getUsername();
 
             TaskListener listener = getContext().get(TaskListener.class);
             Objects.requireNonNull(listener, "Listener is mandatory here");
 
             listener.getLogger().println(Messages.slackSendStepValues(
                     defaultIfEmpty(baseUrl), defaultIfEmpty(teamDomain), channel, defaultIfEmpty(color), botUser,
-                    defaultIfEmpty(tokenCredentialId))
+                    defaultIfEmpty(tokenCredentialId), defaultIfEmpty(iconEmoji), defaultIfEmpty(username))
             );
             final String populatedToken;
             try {
@@ -263,10 +298,11 @@ public class SlackSendStep extends Step {
                 return null;
             }
 
-            SlackService slackService = getSlackService(
-                    baseUrl, teamDomain, botUser, channel, step.replyBroadcast, populatedToken);
+            SlackService slackService = getSlackService(baseUrl, teamDomain, botUser, channel, step.replyBroadcast, sendAsText, iconEmoji, username, populatedToken);
             final boolean publishSuccess;
-            if (step.attachments != null) {
+            if (sendAsText) {
+                publishSuccess = slackService.publish(step.message, new JSONArray(), color);
+            } else if (step.attachments != null) {
                 JSONArray jsonArray = getAttachmentsAsJSONArray();
                 for (Object object : jsonArray) {
                     if (object instanceof JSONObject) {
@@ -285,8 +321,8 @@ public class SlackSendStep extends Step {
                 return null;
             }
             SlackResponse response = null;
+            String responseString = slackService.getResponseString();
             if (publishSuccess) {
-                String responseString = slackService.getResponseString();
                 if (responseString != null) {
                     try {
                         org.json.JSONObject result = new org.json.JSONObject(responseString);
@@ -301,8 +337,14 @@ public class SlackSendStep extends Step {
                     return new SlackResponse();
                 }
             } else if (step.failOnError) {
+                if (responseString != null) {
+                    throw new AbortException(Messages.notificationFailedWithException(responseString));
+                }
                 throw new AbortException(Messages.notificationFailed());
             } else {
+                if (responseString != null) {
+                    listener.error(Messages.notificationFailedWithException(responseString));
+                }
                 listener.error(Messages.notificationFailed());
             }
             return response;
@@ -363,8 +405,18 @@ public class SlackSendStep extends Step {
         }
 
         //streamline unit testing
-        SlackService getSlackService(String baseUrl, String team, boolean botUser, String channel, boolean replyBroadcast, String populatedToken) {
-            return new StandardSlackService(baseUrl, team, botUser, channel, replyBroadcast, populatedToken);
+        SlackService getSlackService(String baseUrl, String team, boolean botUser, String channel, boolean replyBroadcast, boolean sendAsText, String iconEmoji, String username, String populatedToken) {
+            return new StandardSlackService(
+                    new StandardSlackServiceBuilder()
+                        .withBaseUrl(baseUrl)
+                        .withTeamDomain(team)
+                        .withBotUser(botUser)
+                        .withRoomId(channel)
+                        .withReplyBroadcast(replyBroadcast)
+                        .withIconEmoji(iconEmoji)
+                        .withUsername(username)
+                        .withPopulatedToken(populatedToken)
+                    );
         }
     }
 }

@@ -8,7 +8,7 @@
         <f:checkbox field="notifySuccess" />
     </f:entry>
 
-    <f:entry title="Notify Failure">
+    <f:entry title="Notify Failure" help="/plugin/slack/help-projectConfig-slackNotifyEveryFailure.html">
         <f:checkbox field="notifyEveryFailure" onclick="enableDisableFailure(this)" />
     </f:entry>
 
@@ -134,18 +134,31 @@
         function enableDisableFailure(checkbox) {
             if (checkbox.checked) {
                 document.getElementsByName('_.notifyFailure')[0].disabled=true;
+                document.getElementsByName('_.notifyFailure')[0].checked=true;
                 document.getElementsByName('_.notifyRepeatedFailure')[0].disabled=true;
+                document.getElementsByName('_.notifyRepeatedFailure')[0].checked=true;
                 document.getElementsByName('_.notifyAborted')[0].disabled=true;
+                document.getElementsByName('_.notifyAborted')[0].checked=true;
                 document.getElementsByName('_.notifyNotBuilt')[0].disabled=true;
+                document.getElementsByName('_.notifyNotBuilt')[0].checked=true;
                 document.getElementsByName('_.notifyUnstable')[0].disabled=true;
+                document.getElementsByName('_.notifyUnstable')[0].checked=true;
                 document.getElementsByName('_.notifyRegression')[0].disabled=true;
+                document.getElementsByName('_.notifyRegression')[0].checked=true;
+
             } else {
                 document.getElementsByName('_.notifyFailure')[0].disabled=false;
+                document.getElementsByName('_.notifyFailure')[0].checked=false;
                 document.getElementsByName('_.notifyRepeatedFailure')[0].disabled=false;
+                document.getElementsByName('_.notifyRepeatedFailure')[0].checked=false;
                 document.getElementsByName('_.notifyAborted')[0].disabled=false;
+                document.getElementsByName('_.notifyAborted')[0].checked=false;
                 document.getElementsByName('_.notifyNotBuilt')[0].disabled=false;
+                document.getElementsByName('_.notifyNotBuilt')[0].checked=false;
                 document.getElementsByName('_.notifyUnstable')[0].disabled=false;
+                document.getElementsByName('_.notifyUnstable')[0].checked=false;
                 document.getElementsByName('_.notifyRegression')[0].disabled=false;
+                document.getElementsByName('_.notifyRegression')[0].checked=false;
             }
         }
 
